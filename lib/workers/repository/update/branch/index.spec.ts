@@ -2987,7 +2987,7 @@ describe('workers/repository/update/branch/index', () => {
         commit.commitFilesToBranch.mock.invocationCallOrder[0],
       ).toBeLessThan(
         scm.checkoutBranch.mock.invocationCallOrder[
-        checkoutBranchCalledTimes - 1
+          checkoutBranchCalledTimes - 1
         ],
       );
     });

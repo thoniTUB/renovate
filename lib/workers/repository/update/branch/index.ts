@@ -74,7 +74,8 @@ async function rebaseCheck(
     /* v8 ignore start -- needs test */
     if (GlobalConfig.get('dryRun')) {
       logger.info(
-        `DRY-RUN: Would delete label ${config.rebaseLabel!} from #${branchPr.number
+        `DRY-RUN: Would delete label ${config.rebaseLabel!} from #${
+          branchPr.number
         }`,
       );
       /* v8 ignore stop -- needs test */
@@ -378,10 +379,13 @@ export async function processBranch(
           isActiveConfidenceLevel(upgrade.minimumConfidence!),
       )
     ) {
-      const depNamesWithoutReleaseTimestamp: Record<MinimumReleaseAgeTimestamp, string[]> = {
-        'required': [],
-        'optional': [],
-      }
+      const depNamesWithoutReleaseTimestamp: Record<
+        MinimumReleaseAgeTimestamp,
+        string[]
+      > = {
+        required: [],
+        optional: [],
+      };
 
       // Only set a stability status check if one or more of the updates contain
       // both a minimumReleaseAge setting and a releaseTimestamp
@@ -415,24 +419,24 @@ export async function processBranch(
           } else {
             // if we're set to `minimumReleaseAgeTimestamp=required`, and there isn't a timestamp, always mark the update as pending
             if (minimumReleaseAgeTimestamp === 'required') {
-              depNamesWithoutReleaseTimestamp.required.push(upgrade.depName!)
+              depNamesWithoutReleaseTimestamp.required.push(upgrade.depName!);
               config.stabilityStatus = 'yellow';
               continue;
             } else {
               // if there is no timestamp, and we're running in `optional` mode, we can allow it, but make sure to warn the user
-              depNamesWithoutReleaseTimestamp.optional.push(upgrade.depName!)
+              depNamesWithoutReleaseTimestamp.optional.push(upgrade.depName!);
             }
           }
         }
 
         if (depNamesWithoutReleaseTimestamp.required) {
           logger.debug(
-            { depNames: depNamesWithoutReleaseTimestamp.required, },
+            { depNames: depNamesWithoutReleaseTimestamp.required },
             `${depNamesWithoutReleaseTimestamp.required.length} upgrades did not have a releaseTimestamp, and as we're running with minimumReleaseAgeTimestamp=required, these upgrades(s) will be marked as pending status checks`,
           );
         } else if (depNamesWithoutReleaseTimestamp.optional) {
           logger.warn(
-            { depNames: depNamesWithoutReleaseTimestamp.optional, },
+            { depNames: depNamesWithoutReleaseTimestamp.optional },
             `${depNamesWithoutReleaseTimestamp.optional.length} upgrades did not have a releaseTimestamp, but as we're running with minimumReleaseAgeTimestamp=optional, proceeding`,
           );
         }
@@ -877,7 +881,8 @@ export async function processBranch(
   try {
     logger.debug('Ensuring PR');
     logger.debug(
-      `There are ${config.errors!.length} errors and ${config.warnings!.length
+      `There are ${config.errors!.length} errors and ${
+        config.warnings!.length
       } warnings`,
     );
     const ensurePrResult = await ensurePr(config);
