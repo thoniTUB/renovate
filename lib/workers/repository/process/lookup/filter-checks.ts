@@ -66,6 +66,11 @@ export async function filterInternalChecks(
       }
       candidateRelease = updatedCandidateRelease;
 
+      const candidateVersionsWithoutReleaseTimestamp: Record<MinimumReleaseAgeTimestamp, string[]> = {
+        'required': [],
+        'optional': [],
+      }
+
       // Now check for a minimumReleaseAge config
       const { minimumConfidence, minimumReleaseAge, updateType } =
         releaseConfig;
@@ -98,10 +103,7 @@ export async function filterInternalChecks(
           minimumReleaseAgeTimestamp === 'required'
         ) {
           // Skip it, as we require a timestamp
-          logger.trace(
-            { depName, check: 'minimumReleaseAge' },
-            `Release ${candidateRelease.version} did not have a releaseTimestamp, and as we're running with minimumReleaseAgeTimestamp=required, this release will be marked as pending status checks`,
-          );
+          candidateVersionsWithoutReleaseTimestamp[minimumReleaseAgeTimestamp].push(candidateRelease.version)
           pendingReleases.unshift(candidateRelease);
           continue;
         } // if there is no timestamp, and we're running in `optional` mode, we can allow it
@@ -109,11 +111,20 @@ export async function filterInternalChecks(
           is.nullOrUndefined(candidateRelease.releaseTimestamp) &&
           minimumReleaseAgeTimestamp === 'optional'
         ) {
-          logger.trace(
-            { depName, check: 'minimumReleaseAge' },
-            `Release ${candidateRelease.version} did not have a releaseTimestamp, but as we're running with minimumReleaseAgeTimestamp=optional, proceeding`,
-          );
+          candidateVersionsWithoutReleaseTimestamp[minimumReleaseAgeTimestamp].push(candidateRelease.version)
         }
+      }
+
+      if (candidateVersionsWithoutReleaseTimestamp.required) {
+        logger.debug(
+          { depName, versions: candidateVersionsWithoutReleaseTimestamp.required, check: 'minimumReleaseAge' },
+          `${candidateVersionsWithoutReleaseTimestamp.required.length} release(s) did not have a releaseTimestamp, and as we're running with minimumReleaseAgeTimestamp=required, these release(s) will be marked as pending status checks`,
+        );
+      } else if (candidateVersionsWithoutReleaseTimestamp.optional) {
+        logger.debug(
+          { depName, versions: candidateVersionsWithoutReleaseTimestamp.optional, check: 'minimumReleaseAge' },
+          `${candidateVersionsWithoutReleaseTimestamp.optional.length} release(s) did not have a releaseTimestamp, but as we're running with minimumReleaseAgeTimestamp=optional, proceeding`,
+        );
       }
 
       // TODO #22198

@@ -238,7 +238,7 @@ describe('workers/repository/update/branch/index', () => {
       });
     });
 
-    describe('if release is missing releaseTimestamp with minimumReleaseAge set', async () => {
+    describe('if release is missing releaseTimestamp with minimumReleaseAge set', () => {
       it('skips branch if minimumReleaseAgeTimestamp=required', async () => {
         schedule.isScheduledNow.mockReturnValueOnce(true);
         config.prCreation = 'not-pending';
@@ -2987,7 +2987,7 @@ describe('workers/repository/update/branch/index', () => {
         commit.commitFilesToBranch.mock.invocationCallOrder[0],
       ).toBeLessThan(
         scm.checkoutBranch.mock.invocationCallOrder[
-          checkoutBranchCalledTimes - 1
+        checkoutBranchCalledTimes - 1
         ],
       );
     });
