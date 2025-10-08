@@ -38,6 +38,14 @@ export async function filterInternalChecks(
     // Don't care if minimumReleaseAge or minimumConfidence are unmet
     release = sortedReleases.pop();
   } else {
+    const candidateVersionsWithoutReleaseTimestamp: Record<
+      MinimumReleaseAgeTimestamp,
+      string[]
+    > = {
+      required: [],
+      optional: [],
+    };
+
     // iterate through releases from highest to lowest, looking for the first which will pass checks if present
     for (let candidateRelease of sortedReleases.reverse()) {
       // merge the release data into dependency config
@@ -65,14 +73,6 @@ export async function filterInternalChecks(
         continue;
       }
       candidateRelease = updatedCandidateRelease;
-
-      const candidateVersionsWithoutReleaseTimestamp: Record<
-        MinimumReleaseAgeTimestamp,
-        string[]
-      > = {
-        required: [],
-        optional: [],
-      };
 
       // Now check for a minimumReleaseAge config
       const { minimumConfidence, minimumReleaseAge, updateType } =
@@ -122,26 +122,6 @@ export async function filterInternalChecks(
         }
       }
 
-      if (candidateVersionsWithoutReleaseTimestamp.required) {
-        logger.debug(
-          {
-            depName,
-            versions: candidateVersionsWithoutReleaseTimestamp.required,
-            check: 'minimumReleaseAge',
-          },
-          `${candidateVersionsWithoutReleaseTimestamp.required.length} release(s) did not have a releaseTimestamp, and as we're running with minimumReleaseAgeTimestamp=required, these release(s) will be marked as pending status checks`,
-        );
-      } else if (candidateVersionsWithoutReleaseTimestamp.optional) {
-        logger.warn(
-          {
-            depName,
-            versions: candidateVersionsWithoutReleaseTimestamp.optional,
-            check: 'minimumReleaseAge',
-          },
-          `${candidateVersionsWithoutReleaseTimestamp.optional.length} release(s) did not have a releaseTimestamp, but as we're running with minimumReleaseAgeTimestamp=optional, proceeding`,
-        );
-      }
-
       // TODO #22198
       if (isActiveConfidenceLevel(minimumConfidence!)) {
         const confidenceLevel =
@@ -166,6 +146,29 @@ export async function filterInternalChecks(
       release = candidateRelease;
       break;
     }
+
+    if (candidateVersionsWithoutReleaseTimestamp.required.length) {
+      logger.debug(
+        {
+          depName,
+          versions: candidateVersionsWithoutReleaseTimestamp.required,
+          check: 'minimumReleaseAge',
+        },
+        `${candidateVersionsWithoutReleaseTimestamp.required.length} release(s) did not have a releaseTimestamp, and as we're running with minimumReleaseAgeTimestamp=required, these release(s) will be marked as pending status checks`,
+      );
+    }
+
+    if (candidateVersionsWithoutReleaseTimestamp.optional.length) {
+      logger.warn(
+        {
+          depName,
+          versions: candidateVersionsWithoutReleaseTimestamp.optional,
+          check: 'minimumReleaseAge',
+        },
+        `${candidateVersionsWithoutReleaseTimestamp.optional.length} release(s) did not have a releaseTimestamp, but as we're running with minimumReleaseAgeTimestamp=optional, proceeding`,
+      );
+    }
+
     if (!release) {
       if (pendingReleases.length) {
         // If all releases were pending then just take the highest

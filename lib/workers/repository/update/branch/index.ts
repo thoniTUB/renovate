@@ -429,15 +429,16 @@ export async function processBranch(
           }
         }
 
-        if (depNamesWithoutReleaseTimestamp.required) {
+        if (depNamesWithoutReleaseTimestamp.required.length) {
           logger.debug(
             { depNames: depNamesWithoutReleaseTimestamp.required },
-            `${depNamesWithoutReleaseTimestamp.required.length} upgrades did not have a releaseTimestamp, and as we're running with minimumReleaseAgeTimestamp=required, these upgrades(s) will be marked as pending status checks`,
+            `${depNamesWithoutReleaseTimestamp.required.length} upgrade(s) did not have a releaseTimestamp, and as we're running with minimumReleaseAgeTimestamp=required, these upgrades(s) will be marked as pending status checks`,
           );
-        } else if (depNamesWithoutReleaseTimestamp.optional) {
+        }
+        if (depNamesWithoutReleaseTimestamp.optional.length) {
           logger.warn(
             { depNames: depNamesWithoutReleaseTimestamp.optional },
-            `${depNamesWithoutReleaseTimestamp.optional.length} upgrades did not have a releaseTimestamp, but as we're running with minimumReleaseAgeTimestamp=optional, proceeding`,
+            `${depNamesWithoutReleaseTimestamp.optional.length} upgrade(s) did not have a releaseTimestamp, but as we're running with minimumReleaseAgeTimestamp=optional, proceeding`,
           );
         }
 
