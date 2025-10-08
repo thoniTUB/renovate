@@ -121,7 +121,7 @@ export async function filterInternalChecks(
           `${candidateVersionsWithoutReleaseTimestamp.required.length} release(s) did not have a releaseTimestamp, and as we're running with minimumReleaseAgeTimestamp=required, these release(s) will be marked as pending status checks`,
         );
       } else if (candidateVersionsWithoutReleaseTimestamp.optional) {
-        logger.debug(
+        logger.warn(
           { depName, versions: candidateVersionsWithoutReleaseTimestamp.optional, check: 'minimumReleaseAge' },
           `${candidateVersionsWithoutReleaseTimestamp.optional.length} release(s) did not have a releaseTimestamp, but as we're running with minimumReleaseAgeTimestamp=optional, proceeding`,
         );
