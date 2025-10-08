@@ -394,7 +394,7 @@ export async function processBranch(
       for (const upgrade of config.upgrades) {
         if (is.nonEmptyString(upgrade.minimumReleaseAge)) {
           let minimumReleaseAgeTimestamp: MinimumReleaseAgeTimestamp =
-            'required';
+            'optional';
           if (
             isMinimumReleaseAgeTimestamp(upgrade.minimumReleaseAgeTimestamp)
           ) {

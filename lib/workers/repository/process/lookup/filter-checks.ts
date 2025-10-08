@@ -78,7 +78,7 @@ export async function filterInternalChecks(
       const { minimumConfidence, minimumReleaseAge, updateType } =
         releaseConfig;
       if (is.nonEmptyString(minimumReleaseAge)) {
-        let minimumReleaseAgeTimestamp: MinimumReleaseAgeTimestamp = 'required';
+        let minimumReleaseAgeTimestamp: MinimumReleaseAgeTimestamp = 'optional';
         if (
           isMinimumReleaseAgeTimestamp(releaseConfig.minimumReleaseAgeTimestamp)
         ) {
